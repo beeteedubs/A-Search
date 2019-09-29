@@ -3,18 +3,29 @@
 #include <stdlib.h>
 
 #define ARITHMETICOPERATORS '+'||'*'||'/'||'-'
-#define LOGICALOPERATORS "OR" ||"AND"
 #define ARITHMETICOPERANDS '1'||'2'||'3'||'4'||'5'||'6'||'7'||'8'||'9'||'0'
 #define LOGICALOPERANDS  "true" || "false"
 
-char* substring(char *source, int start, int length){
-    char *ptr = (char*)malloc(length*sizeof(char*)+1);
-    int c = 0;
 
+//returns opposite of java substring, how much left
+char* substring(char *source, int start){
+    
+    //1st loop figures out how long the remainder of the string is
+    int length = 0;
+    while (*(source+start+length) != '\0'){
+        length++;
+    }
+    
+    //allocates proper amt of memory, +1 for the null terminator
+    char *ptr = (char*)malloc(length*sizeof(char*)+1);
+   
+    //2nd loop fills in the output
+    int c = 0;
     while(c<length){
         ptr[c] = source[c+start];
         c++;
     }
+    //last char is null terminator
     ptr[c] = '\0';
     return ptr;
 }
@@ -29,6 +40,8 @@ int strLen (char*str){
 
     return i;
 }
+
+//returns 0 if equal
 int stringComp  (const char *p1, const char *p2)
 {
       const unsigned char *s1 = (const unsigned char *) p1;
@@ -69,15 +82,39 @@ int typeExpression (char **strArr){
 ///////////////////////////////////////////////////////////
 char** delimSpace(int* numElements, char *in){
 
-//  creates output
-	char** strArr = malloc(4*sizeof(char*));
-//  creates 
+//1st looop determines how many base indeces
     int baseIndex = 0;
+    int prevSpace = 1;
+    int longestToken = 0;
+    int latestToken = 0;
+    int counter1 = 0;
+    while(in[counter1] != '\0'){
+        if (in[counter1] != ' ' && prevSpace == 1){
+            baseIndex++;
+            prevSpace = 0;            
+        }
+        if (in[counter1] == ' '){
+            prevSpace = 1;
+            if (longestToken < latestToken){
+                int temp = longestToken;
+                longestToken = latestToken;
+                latestToken = temp;
+            }
+            latestToken = -1;
+        }
+        latestToken++;   
+        counter1++;
+    }
+    
+
+//  creates output
+	char** strArr = malloc(baseIndex*sizeof(char*));
+//  2nd loop
 	int i = 0;
 	bool reachedEndOfLine = false;
 
 	while(!reachedEndOfLine) {
-		strArr[baseIndex] = malloc(8*sizeof(char));
+		strArr[baseIndex] = malloc(longestToken*sizeof(char));
 		int hiCount = 0;
 		
 		while(in[i] != ' ' && in[i] != '\0') {
@@ -88,7 +125,6 @@ char** delimSpace(int* numElements, char *in){
 		if(in[i] == '\0') {
 			reachedEndOfLine = true;
 		}
-		baseIndex++;
 		i++;
 	}
     
@@ -100,16 +136,12 @@ char** delimSpace(int* numElements, char *in){
 //////////////////////////////////////////////////////////\
 //  return char array (aka expression) and whether hit \0  |
 ///////////////////////////////////////////////////////////
-char* delimSemicolon(int* isEnd, int*expressionLen, char*in){
+char* delimSemicolon(int*expressionLen, char*in){
 
 //1st loop determine how much space to malloc, continue as long as not ';' and not '\0'
         while(in[*expressionLen] != ';' &&  in[*expressionLen] !='\0'){
             *expressionLen++;
     }
-
-//if 1st loop stopped cuz saw \0, then set isEnd to 0
-    if (in[*expressionLen] == '\0'){ isEnd = 0; }
-
 //creates output, malloced space based off 1st loop
 	char* charArr = malloc(*expressionLen*sizeof(char*));
 
@@ -130,33 +162,37 @@ char* delimSemicolon(int* isEnd, int*expressionLen, char*in){
 int main(int argc, char**argv){
 
 
-:
+
 //  initialize variables
     int numElements; // for freeing
-    int expressionLen; // 
-    int isEnd = 1;
+    int expressionLen; // length of expression
     int numArithmeticExps = 0;
     int numLogicalExps = 0;
 
 //  initialize var as input from command line
-    char* s = argv[1];
+    char *s = argv[1];//will hold remainder of original string
 
 //  loop through expression
-    char **ex = delimSpace(&numElements, s);
-    char *expression = substring(s, 0, numElements);
+    
     int counter = 0;
-
-    while(counter)
-
-
-//  frees the dynamically allocated mem
-    int i = 0;
-    while(i < numElements) {
-        free(*(ex + i));
-        i++;
+    while (s[counter] != '\0'){
+        char *expression = delimSemicolon(&expressionLen, s);
+        char **tokens = delimSpace(&numElements, expression);
+        int insideCounter = 0;
+        while(*(tokens+insideCounter) != '\0'){
+            printf("%s\n", *(tokens+insideCounter));
+        }
+        s = substring(s, expressionLen);
     }
-	free(ex);
-    free(expression);
+   
+//  frees the dynamically allocated mem
+   // int i = 0;
+   // while(i < numElements) {
+ //       free(*(tokens + i));
+   //     i++;
+   // }
+//	free(tokens);
+    
 
 	return 0;
 }
