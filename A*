@@ -1,0 +1,27 @@
+
+#get index of T, cuz in future will randomize it
+# while loop until indices of S = indices of T
+# g = number of times run loop
+# h = target indices - x and y coord for curr indices
+# f = g+h
+# randomly choose, reassign old val of S to c, new val to S
+# list all openlist items with o
+# update loop counter
+
+import numpy as np
+def star():
+    A = []
+    for x in range(5):
+        A.append([' ' for y in range(5)])
+    A[0][0] = 'S'
+    r = 0
+    c = 0
+    A[4][4] = 'T'
+    openList = []
+    closedList = []
+    g = 0
+    h = 8
+    f = g + h
+    counter = 0
+    target = float("inf")
+    while
