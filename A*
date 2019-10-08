@@ -1,12 +1,16 @@
+# matrix of nodes
+# matrix of true grids ints (0 means free, 1 means blocked) cuz agent doens't know which are blocked so can't sear
+# initialize Ol and CL, but start node inside
+    # CL is an list, OL is a priority queue (heap)
+# node class
+    # int r, int c, int g, int h, int f, Node parent
+# while loop until g(T) is top of heap in openList, which means you found shortest path
+    # pop OL to CL
+    # for loop for all neighboring cells (up to 4)
+        # if neighbor is space char
+            # create a node with appropriate x and y vals, use that to calculate the f val
+        # 3 more if statements
 
-#get index of T, cuz in future will randomize it
-# while loop until indices of S = indices of T
-# g = number of times run loop
-# h = target indices - x and y coord for curr indices
-# f = g+h
-# randomly choose, reassign old val of S to c, new val to S
-# list all openlist items with o
-# update loop counter
 
 import numpy as np
 def star():
