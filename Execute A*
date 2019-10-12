@@ -1,23 +1,13 @@
-import numpy as np
+import numpy as num
+from numpy import zeros
+import random
+import math
+from operator import attrgetter
+import operator
+from heapq import heappush, heappop
 # ------------------- TO BE CHANGED LATER
 # - make worlds 101 x 101
 # - stop loop also if openList is empty
-# - assume blocks
-
-# states implemented as Nodes
-# 'x' and 'y' are ints indicating state's location
-# 'g','heuristic', and 'f' are self-explanatory
-# 'direction' is the state's parent
-class Node:
-    def __init__(self, x, y, g, heuristic, f, direction):
-        self.x = x
-        self.y = y
-        self.g = g
-        self.heuristic = heuristic
-        self.f = f
-        self.direction = direction
-
-
 
 # executes the path
 def main():
@@ -42,15 +32,20 @@ def main():
     # initializes goal state in bottom right corner
     goal = Node (4,4,None,0,None,None)
 
-    # 2 indicates start, 3 indicates goal
+    # 2 = start, 3 = goal
     mentalMatrix[start.x][start.y] = 2
     mentalMatrix[goal.x][goal.y] = 3
+
     print(mentalMatrix)
-    # loop will run until it reaches goal, or share same location
+
+    # loop will run until it reaches goal
     while start.x != goal.x and start.y != goal.y:
 
-        # node = the goal node
+        # node = the goal state
         node = computePath(start,goal,mentalMatrix)
+
+        # if any -1, change back to 0, this can show final trail taken
+
 
         # increases visibility of mentalMatrix only if in bounds
         if start.x + 1 <= 4 and start.y + 1 <= 4:
@@ -62,25 +57,35 @@ def main():
         if start.x - 1 >= 0 and start.y - 1 >= 0:
             mentalMatrix[start.x - 1][start.y - 1] = true_matrix[start.x - 1][start.y - 1]
 
-        # stop when 'nodePrev' equals the node before 'start'
-        while nodeCurr.x != goal.x and nodeCurr.y != goal.y :
+        # same condition because only want to break out of this loop when done or hit a block
+        while start.x != goal.x and start.y != goal.y:
 
             # 2 node ptrs, one points behind the other
             nodeCurr = node
             nodePrev = None
             nodePrev.direction = nodeCurr
 
-            # loop until 'nodeCurr' = start coordinates
+            # loop until 'nodeCurr' = start coordinates, and then 'nodePrev'
+            # will contain the coordinates where 'start' should be next run
             while nodeCurr.x != start.x and nodeCurr.y != start.y:
                 nodePrev = nodeCurr
                 nodeCurr = nodeCurr.direction
 
-            # change 'start' locations
-            start.x = nodePrev.x
-            start.y = nodePrev.y
+            
+            print(mentalMatrix)
 
-            # update mentalMatrix path to show whats been traversed
-            mentalMatrix[start.x][start.y] = 'x'
+            # if 'nodePrev' planned state is a block, re-run 'computePath()'
+            if true_matrix[nodePrev.x][nodePrev.y] == 1:
+
+                # breaks out to go back to bigger loop and run 'computePath()'
+                break
+            else:
+                # change 'start' locations
+                start.x = nodePrev.x
+                start.y = nodePrev.y
+
+                # update mentalMatrix path to show whats been traversed, -1 means visited
+                mentalMatrix[start.x][start.y] = -1
 
             # increases visibility of mentalMatrix only if in bounds
             if start.x + 1 <= 4 and start.y + 1 <= 4:
@@ -91,6 +96,5 @@ def main():
                 mentalMatrix[start.x - 1][start.y + 1] = true_matrix[start.x - 1][start.y + 1]
             if start.x - 1 >= 0 and start.y - 1 >= 0:
                 mentalMatrix[start.x - 1][start.y - 1] = true_matrix[start.x - 1][start.y - 1]
-
 
 main()
