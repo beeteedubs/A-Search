@@ -9,52 +9,73 @@ import random
 import numpy as num
 from numpy import zeros
 
-# x = size of gridworld
-x = 7
-gridworld = zeros([x, x])
 
+class Node:
+    def __init__(self, data, visited):
+        self.data = data
+        self.visited = visited
+
+
+# x = size of gridworld
+x= 13
+
+
+intMatrix = zeros([x, x])
+nodeMatrix = [[Node(0, False) for i in range(x)] for j in range(x)]
+for r in range(x):
+    for c in range(x):
+        nodeMatrix[r][c] = Node(0, False)
 # creates tic-tac-toe pattern of walls, to be broken down
 for row in range(1, x, 2):
     for col in range(x):
-        gridworld[row][col] = 1
+        intMatrix[row][col] = 1
+        nodeMatrix[row][col] = Node(1, True)
 for col in range(1, x, 2):
     for row in range(x):
-        gridworld[row][col] = 1
+        intMatrix[row][col] = 1
+        nodeMatrix[row][col] = Node(1, True)
 
 # confirms tic-tac-toe pattern
-print(gridworld)
+print(intMatrix)
+print("\nNew intMatrix:\n")
+
 
 # for marking as visited
-class Node:
-    def __init__(self, data,next):
-        self.data = data
-        self.next = next
-
-# creates
-num_rows = x
-num_cols = x
-row = [Node(1,None)]*num_rows
-# The original way doesn't behave exactly right, this avoids
-# deep nesting of the array. Also adding list(row) to create
-# a new object rather than carrying references to row to all rows
-nodeMatrix = [list(row) for i in range(num_cols)]
 
 
-class Queue:
-    def __init__(self):
-        self.items = []
+# xcoord and ycoord restricted to even numbers
+def dfs(nodeMatrix, xcoord, ycoord):
+    nodeMatrix[xcoord][ycoord].visited = True
+    direction = random.randint(1, 4)
+    counter = 0
+    while counter < 4:
+        if direction % 4 == 0:  # go up
+            if ycoord - 2 >= 0:  # check if in bounds
+                if (not nodeMatrix[xcoord][ycoord - 2].visited):  # check if visited
+                    intMatrix[xcoord][ycoord - 1] = 0  # breaks the wall
+                    dfs(nodeMatrix, xcoord, ycoord - 2)
+        elif direction % 4 == 1:  # go right
+            if xcoord + 2 <= x:  # check if in bounds
+                if (not nodeMatrix[xcoord + 2][ycoord].visited):  # check if visited
+                    intMatrix[xcoord + 1][ycoord] = 0  # breaks the wall
+                    dfs(nodeMatrix, xcoord + 2, ycoord)
+        elif direction % 4 == 2:  # go down
+            if ycoord + 2 <= x:  # check if in bounds
+                if (not nodeMatrix[xcoord][ycoord + 2].visited):  # check if visited
+                    intMatrix[xcoord][ycoord + 1] = 0  # breaks the wall
+                    dfs(nodeMatrix, xcoord, ycoord + 2)
+        elif direction % 4 == 3:  # go right
+            if xcoord - 2 >= 0:  # check if in bounds
+                if (not nodeMatrix[xcoord - 2][ycoord].visited):  # check if visited
+                    intMatrix[xcoord - 1][ycoord] = 0  # breaks the wall
+                    dfs(nodeMatrix, xcoord - 2, ycoord)
+        direction = direction + 1
+        counter = counter + 1
 
-    def isEmpty(self):
-        return self.items == []
 
-    def enqueue(self, item):
-        self.items.insert(0,item)
-
-    def dequeue(self):
-        return self.items.pop()
-
-    def size(self):
-        return len(self.items)
+def main():
+    dfs(nodeMatrix, 0, 0)
 
 
-
+main()
+print(intMatrix)
